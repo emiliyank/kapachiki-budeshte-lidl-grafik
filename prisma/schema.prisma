@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -10,4 +5,108 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  LIDL
+}
+
+enum ContainerSize {
+  TUBE_5L
+  TUBE_10L
+  BAG
+}
+
+enum ReservationStatus {
+  ACTIVE
+  CANCELLED
+  COMPLETED
+}
+
+model User {
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique
+  password  String
+  role      Role      @default(LIDL)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  sessions  Session[]
+  accounts  Account[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model InviteToken {
+  id        String   @id @default(cuid())
+  token     String   @unique @default(cuid())
+  role      Role
+  email     String?
+  used      Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model DayConfig {
+  id          String   @id @default(cuid())
+  date        DateTime @unique @db.Date
+  isBlocked   Boolean  @default(false)
+  blockReason String?
+  maxCapacity Float?
+  updatedAt   DateTime @updatedAt
+}
+
+model GlobalSettings {
+  id              String   @id @default("global")
+  defaultCapacity Float    @default(6.0)
+  updatedAt       DateTime @updatedAt
+}
+
+model Reservation {
+  id            String            @id @default(cuid())
+  name          String
+  email         String?
+  date          DateTime          @db.Date
+  containerSize ContainerSize
+  capacityUnits Float
+  status        ReservationStatus @default(ACTIVE)
+  reminderSent  Boolean           @default(false)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  cancellationRequests CancellationRequest[]
+}
+
+model CancellationRequest {
+  id            String      @id @default(cuid())
+  reservationId String
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+  message       String
+  resolved      Boolean     @default(false)
+  createdAt     DateTime    @default(now())
 }
