@@ -402,23 +402,23 @@ git push origin main
 ```
 src/
 ├── app/
-│   ├── (public)/                    # Публични страници
-│   │   ├── page.tsx                 # Начална страница + календар
-│   │   ├── резервация/
-│   │   │   └── page.tsx             # Форма за резервация
-│   │   ├── отмяна/
-│   │   │   └── page.tsx             # Заявка за отмяна
-│   │   └── за-нас/
-│   │       └── page.tsx             # За инициативата
-│   ├── вход/
-│   │   └── page.tsx                 # Login страница
-│   ├── admin/                       # Admin панел
+│   ├── (public)/                    # Public pages
+│   │   ├── page.tsx                 # Home page + calendar
+│   │   ├── reservation/
+│   │   │   └── page.tsx             # Reservation form
+│   │   ├── cancel/
+│   │   │   └── page.tsx             # Cancellation request form
+│   │   └── about/
+│   │       └── page.tsx             # About the initiative
+│   ├── login/
+│   │   └── page.tsx                 # Login page
+│   ├── admin/                       # Admin panel
 │   │   ├── layout.tsx
 │   │   ├── page.tsx                 # Dashboard
-│   │   ├── резервации/page.tsx      # Таблица + календар
-│   │   ├── настройки/page.tsx       # Капацитет и настройки
-│   │   └── потребители/page.tsx     # Акаунти + invite links
-│   ├── lidl/                        # Lidl панел
+│   │   ├── reservations/page.tsx    # Table + calendar view
+│   │   ├── settings/page.tsx        # Capacity and settings
+│   │   └── users/page.tsx           # Accounts + invite links
+│   ├── lidl/                        # Lidl panel
 │   │   ├── layout.tsx
 │   │   └── page.tsx
 │   └── api/
@@ -426,12 +426,12 @@ src/
 │       ├── reservations/
 │       │   ├── route.ts             # GET, POST
 │       │   └── [id]/route.ts        # PATCH, DELETE
-│       ├── days/route.ts            # GET статус, PATCH блокиране
-│       ├── settings/route.ts        # GET/PATCH глобални настройки
+│       ├── days/route.ts            # GET status, PATCH block
+│       ├── settings/route.ts        # GET/PATCH global settings
 │       ├── users/route.ts           # GET/POST (Admin)
-│       ├── invite/route.ts          # POST генериране на invite
+│       ├── invite/route.ts          # POST generate invite
 │       └── cron/
-│           └── reminders/route.ts   # Vercel Cron напомняния
+│           └── reminders/route.ts   # Vercel Cron reminders
 ├── components/
 │   ├── public/
 │   │   ├── ReservationCalendar.tsx
@@ -443,12 +443,12 @@ src/
 │   │   ├── CapacityBar.tsx
 │   │   ├── DayConfigModal.tsx
 │   │   └── UserManagement.tsx
-│   └── ui/                          # shadcn/ui компоненти
+│   └── ui/                          # shadcn/ui components
 ├── lib/
 │   ├── prisma.ts                    # Prisma singleton
-│   ├── capacity.ts                  # Капацитет логика
-│   ├── email.ts                     # Resend функции
-│   └── validations.ts               # Zod схеми
+│   ├── capacity.ts                  # Capacity logic
+│   ├── email.ts                     # Email functions
+│   └── validations.ts               # Zod schemas
 └── types/
     └── index.ts
 ```
