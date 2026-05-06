@@ -236,19 +236,65 @@ model CancellationRequest {
 }
 ```
 
-### Стъпка 2.1 — Стартиране на локалната база данни
+### Стъпка 2.1 — Стартиране на локалната база данни (Docker)
 
-```bash
-npx prisma dev
+Създайте файл `docker-compose.yml` в корена на проекта:
+
+```yaml
+version: '3.8'
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: kapachki_db
+    environment:
+      POSTGRES_USER: kapachki
+      POSTGRES_PASSWORD: kapachki_dev
+      POSTGRES_DB: kapachki_local
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
 ```
 
-> Това стартира управлявана локална PostgreSQL база данни автоматично — без Docker, без отделна инсталация. Оставете този терминал отворен докато разработвате.
+Стартирайте контейнера:
 
-**Важно:** `npx prisma dev` автоматично попълва `DATABASE_URL` в `.env.local`. Не е нужно да го настройвате ръчно за локална разработка.
+```bash
+docker-compose up -d
+```
+
+Добавете в `.env.local`:
+
+```env
+DATABASE_URL="postgresql://kapachki:kapachki_dev@localhost:5432/kapachki_local"
+DIRECT_URL="postgresql://kapachki:kapachki_dev@localhost:5432/kapachki_local"
+```
+
+Добавете `docker-compose.yml` в git (не съдържа реални тайни — само dev стойности):
+
+```bash
+git add docker-compose.yml
+git commit -m "feat: add Docker compose for local PostgreSQL"
+git push origin main
+```
+
+> **DBeaver connection:** Host `localhost`, Port `5432`, Database `kapachki_local`, Username `kapachki`, Password `kapachki_dev`, SSL — disabled.
+
+> **Полезни Docker команди:**
+> ```bash
+> docker-compose up -d      # Стартиране
+> docker-compose down       # Спиране (данните се запазват)
+> docker-compose down -v    # Спиране + изтриване на данните
+> docker-compose logs db    # Преглед на логове
+> ```
 
 ### Стъпка 2.2 — Миграция и seed
 
-Отворете **нов терминал** (оставете `npx prisma dev` да работи) и изпълнете:
+### Стъпка 2.2 — Миграция и seed
+
+Изпълнете в терминал (Docker контейнерът трябва да е стартиран):
 
 ```bash
 npx prisma migrate dev --name init
@@ -792,29 +838,40 @@ git push origin main
 
 > Cron задачата се изпълнява всеки ден в 08:00 UTC и изпраща напомняния за резервации на следващия ден.
 
-### Файл: `.env.local` (шаблон — НЕ commit-вайте!)
+### Файл: `.env.local` (локална разработка — НЕ commit-вайте!)
 
 ```env
-# База данни (от Neon dashboard)
-DATABASE_URL="postgresql://..."
-DIRECT_URL="postgresql://..."
+# -----------------------------------------------
+# ЛОКАЛНА РАЗРАБОТКА — Docker PostgreSQL
+# -----------------------------------------------
+DATABASE_URL="postgresql://kapachki:kapachki_dev@localhost:5432/kapachki_local"
+DIRECT_URL="postgresql://kapachki:kapachki_dev@localhost:5432/kapachki_local"
 
 # NextAuth
 AUTH_SECRET="генерирайте с: openssl rand -base64 32"
 NEXTAUTH_URL="http://localhost:3000"
 
-# Resend (от resend.com)
-RESEND_API_KEY="re_..."
+# Resend — може да оставите празно при локална разработка
+RESEND_API_KEY=""
 
 # Vercel Cron защита
 CRON_SECRET="генерирайте случайна стойност"
 ```
 
+> ⚠️ `DATABASE_URL` и `DIRECT_URL` в `.env.local` сочат към **Docker контейнера**.
+> За production (Vercel) те се заменят с Neon connection strings — директно във Vercel Dashboard, не тук.
+
 ### Файл: `.env.example` (commit-вайте — без реални стойности)
 
 ```env
+# Local development (Docker)
+# DATABASE_URL="postgresql://kapachki:kapachki_dev@localhost:5432/kapachki_local"
+# DIRECT_URL="postgresql://kapachki:kapachki_dev@localhost:5432/kapachki_local"
+
+# Production (Neon) — add these in Vercel Dashboard, not here
 DATABASE_URL=""
 DIRECT_URL=""
+
 AUTH_SECRET=""
 NEXTAUTH_URL="http://localhost:3000"
 RESEND_API_KEY=""
@@ -844,7 +901,7 @@ git push origin main
 
 ### Стъпка 9.1 — Neon база данни (само за production)
 
-> ⚠️ Neon **не е нужен** за локална разработка — там използвате `npx prisma dev`.
+> ⚠️ Neon **не е нужен** за локална разработка — там използвате Docker.
 > Настройвайте Neon само когато сте готови за деплой в Vercel.
 
 1. Регистрирайте се на [neon.tech](https://neon.tech)
