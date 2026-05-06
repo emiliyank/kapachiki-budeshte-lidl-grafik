@@ -3,6 +3,7 @@ import Credentials from 'next-auth/providers/credentials'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
+import { authConfig } from '@/auth.config'
 import type { Role } from '@/generated/prisma/client'
 
 declare module 'next-auth' {
@@ -20,9 +21,9 @@ declare module 'next-auth' {
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  ...authConfig,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   adapter: PrismaAdapter(prisma as any),
-  session: { strategy: 'jwt' },
   providers: [
     Credentials({
       credentials: {
@@ -44,17 +45,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    jwt({ token, user }) {
-      if (user?.role) token.role = user.role as string
-      return token
-    },
-    session({ session, token }) {
-      if (session.user && token.role) {
-        session.user.role = token.role as Role
-      }
-      return session
-    },
-  },
-  pages: { signIn: '/login' },
 })
