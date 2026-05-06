@@ -236,13 +236,19 @@ model CancellationRequest {
 }
 ```
 
-### Стъпка 2.1 — Настройване на Neon
+### Стъпка 2.1 — Стартиране на локалната база данни
 
-1. Регистрирайте се на [neon.tech](https://neon.tech)
-2. Създайте нов проект — "kapachki-vraca"
-3. Копирайте `DATABASE_URL` и `DIRECT_URL` в `.env.local`
+```bash
+npx prisma dev
+```
+
+> Това стартира управлявана локална PostgreSQL база данни автоматично — без Docker, без отделна инсталация. Оставете този терминал отворен докато разработвате.
+
+**Важно:** `npx prisma dev` автоматично попълва `DATABASE_URL` в `.env.local`. Не е нужно да го настройвате ръчно за локална разработка.
 
 ### Стъпка 2.2 — Миграция и seed
+
+Отворете **нов терминал** (оставете `npx prisma dev` да работи) и изпълнете:
 
 ```bash
 npx prisma migrate dev --name init
@@ -836,11 +842,15 @@ git push origin main
 
 ## Фаза 9 — Деплой в Vercel (свързан с GitHub)
 
-### Стъпка 9.1 — Neon база данни
+### Стъпка 9.1 — Neon база данни (само за production)
+
+> ⚠️ Neon **не е нужен** за локална разработка — там използвате `npx prisma dev`.
+> Настройвайте Neon само когато сте готови за деплой в Vercel.
 
 1. Регистрирайте се на [neon.tech](https://neon.tech)
 2. Създайте нов проект — "kapachki-vraca"
-3. Запазете `DATABASE_URL` и `DIRECT_URL`
+3. Копирайте `DATABASE_URL` и `DIRECT_URL` от Neon dashboard
+4. Добавете ги като Environment Variables във Vercel Dashboard (не в `.env.local`!)
 
 ### Стъпка 9.2 — Resend имейли
 
