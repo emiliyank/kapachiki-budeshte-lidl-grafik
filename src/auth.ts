@@ -19,14 +19,9 @@ declare module 'next-auth' {
   }
 }
 
-declare module 'next-auth/jwt' {
-  interface JWT {
-    role?: Role
-  }
-}
-
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  adapter: PrismaAdapter(prisma as any),
   session: { strategy: 'jwt' },
   providers: [
     Credentials({
@@ -51,11 +46,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     jwt({ token, user }) {
-      if (user) token.role = user.role
+      if (user?.role) token.role = user.role as string
       return token
     },
     session({ session, token }) {
-      if (session.user) session.user.role = token.role
+      if (session.user && token.role) {
+        session.user.role = token.role as Role
+      }
       return session
     },
   },
