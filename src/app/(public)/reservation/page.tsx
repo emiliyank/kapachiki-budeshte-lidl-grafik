@@ -1,10 +1,12 @@
 import { ReservationForm } from '@/components/public/ReservationForm'
+import { Suspense } from 'react'
 
 export default function ReservationPage() {
   return (
-    <main className="container mx-auto max-w-lg px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold">Нова резервация</h1>
-      <ReservationForm />
-    </main>
+    <div className="container mx-auto max-w-lg px-4 py-10">
+      <Suspense fallback={<div className="text-sm text-muted-foreground">Зареждане…</div>}>
+        <ReservationForm />
+      </Suspense>
+    </div>
   )
 }

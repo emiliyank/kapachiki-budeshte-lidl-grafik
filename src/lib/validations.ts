@@ -8,7 +8,8 @@ export const createReservationSchema = z.object({
 })
 
 export const cancellationRequestSchema = z.object({
-  reservationId: z.string().min(1),
+  name: z.string().min(2, 'Името трябва да е поне 2 символа'),
+  date: z.string().date('Невалидна дата').optional().or(z.literal('')),
   message: z.string().min(5, 'Моля, опишете причината'),
 })
 

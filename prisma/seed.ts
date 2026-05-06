@@ -12,10 +12,12 @@ async function main() {
     create: { id: 'global', defaultCapacity: 6.0 },
   })
 
-  const hashedPassword = await bcrypt.hash('промени-паролата', 10)
+  const adminPassword = process.env.ADMIN_SEED_PASSWORD
+  if (!adminPassword) throw new Error('ADMIN_SEED_PASSWORD не е зададена в .env.local')
+  const hashedPassword = await bcrypt.hash(adminPassword, 10)
   await prisma.user.upsert({
     where: { email: 'admin@kapachki-vraca.bg' },
-    update: {},
+    update: { password: hashedPassword },
     create: {
       name: 'Администратор',
       email: 'admin@kapachki-vraca.bg',

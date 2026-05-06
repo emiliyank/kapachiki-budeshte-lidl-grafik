@@ -103,10 +103,12 @@ model Reservation {
 }
 
 model CancellationRequest {
-  id            String      @id @default(cuid())
-  reservationId String
-  reservation   Reservation @relation(fields: [reservationId], references: [id])
+  id            String       @id @default(cuid())
+  reservationId String?
+  reservation   Reservation? @relation(fields: [reservationId], references: [id])
+  name          String?
+  date          DateTime?    @db.Date
   message       String
-  resolved      Boolean     @default(false)
-  createdAt     DateTime    @default(now())
+  resolved      Boolean      @default(false)
+  createdAt     DateTime     @default(now())
 }

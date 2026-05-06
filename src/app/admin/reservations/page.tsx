@@ -1,14 +1,5 @@
-import { ReservationsTable } from '@/components/admin/ReservationsTable'
-import { AdminCalendar } from '@/components/admin/AdminCalendar'
+import { redirect } from 'next/navigation'
 
 export default function AdminReservationsPage() {
-  return (
-    <div>
-      <h1 className="mb-6 text-xl font-semibold">Резервации</h1>
-      <div className="grid gap-6 lg:grid-cols-2">
-        <AdminCalendar />
-        <ReservationsTable />
-      </div>
-    </div>
-  )
+  redirect('/admin')
 }
