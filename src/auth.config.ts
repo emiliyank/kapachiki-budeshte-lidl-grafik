@@ -1,5 +1,4 @@
 import type { NextAuthConfig } from 'next-auth'
-import type { Role } from '@/generated/prisma/client'
 
 // Lightweight config — no Prisma, no bcrypt — safe for Edge runtime (middleware)
 export const authConfig: NextAuthConfig = {
@@ -13,7 +12,8 @@ export const authConfig: NextAuthConfig = {
     },
     session({ session, token }) {
       if (session.user && token.role) {
-        session.user.role = token.role as Role
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        session.user.role = token.role as any
       }
       return session
     },
